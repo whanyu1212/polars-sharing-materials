@@ -3,7 +3,7 @@
 theme: default
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
-background: https://free4kwallpapers.com/uploads/wallpaper/minimal-dark-coding-wallpaper-2560x1440-wallpaper.jpg
+background: https://images.unsplash.com/photo-1589656966895-2f33e7653819?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 # apply any unocss classes to the current slide
 class: 'text-center'
 # https://sli.dev/custom/highlighters.html
@@ -15,7 +15,8 @@ info: |
 
 #   Learn more at [Sli.dev](https://sli.dev)
 transition: slide-left
-title: Welcome to Slidev
+title: Cover Page
+hideInToc: true
 mdc: true
 ---
 
@@ -44,25 +45,39 @@ The last comment block of each slide will be treated as slide notes. It will be 
 -->
 
 ---
+layout: default
+hideInToc: true
+transition: fade-out
+---
+
+
+# Table of contents
+
+```html
+<Toc minDepth="1" maxDepth="1"></Toc>
+```
+
+<Toc maxDepth="1"></Toc>
+
+
+---
 transition: fade-out
 ---
 
 # What is Polars?
 
-Slidev is a slide maker and accompanying presentation tool designed for developers. It consists of the following features:
+Polars is a Pandas alternative designed to process data faster. The core is written in Rust, and available for Python, R and NodeJS
 
-- 📝 **Text-based** - focus on the content with Markdown, and apply styles later
-- 🎨 **Themable** - themes can be shared and used as npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your slides
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export to PDF, PPTX, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - virtually anything that's possible on a webpage is possible in Slidev
+- 💻 Utilizes all the available cores on your machine
+- 🏃 Optimizes queries to reduce unneeded work/memory allocations.
+- 📚 Handles datasets much larger than your available RAM
+- 📖 A consistent and predictable API
+- 🔒 Adheres to a strict schema (data-types should be known before running the query).
 
 <br>
 <br>
 
-Read more about Slidev in [Why Slidev?](https://sli.dev/guide/why)
+Read more about Polars in [Polars User Guide](https://docs.pola.rs/)
 
 <!--
 You can have `style` tags in markdown to override the style for the current page.
@@ -86,23 +101,11 @@ Here is another comment.
 -->
 
 ---
-layout: default
----
-
-# Table of contents
-
-```html
-<Toc minDepth="1" maxDepth="1"></Toc>
-```
-
-<Toc maxDepth="1"></Toc>
-
----
 transition: slide-up
 level: 2
 ---
 
-# Navigation
+# PyArrow
 
 Hover on the bottom-left corner to see the navigation's control panel, [learn more](https://sli.dev/guide/navigation.html)
 
@@ -129,7 +132,7 @@ layout: image-right
 image: https://cover.sli.dev
 ---
 
-# Code
+# Similarities and Differences with Pandas
 
 Use code snippets and get automatic highlighting, and even types hover![^1]
 
