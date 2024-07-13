@@ -16,7 +16,7 @@ info: |
 #   Learn more at [Sli.dev](https://sli.dev)
 transition: slide-left
 title: Cover Page
-hideInToc: true
+hideInToc: true # whether it gets hidden in table of content
 mdc: true
 ---
 
@@ -172,23 +172,20 @@ doubled.value = 2
 
 ---
 
-# Components
+# 7 Verbs that get most jobs done
 
 <div grid="~ cols-2 gap-4">
 <div>
 
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. Adding your own custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
+<ul>
+  <li v-click>Select / Slice columns</li>
+  <li v-click>Create / Transform / Assign columns</li>
+  <li v-click>Filter / Slice / Query rows</li>
+  <li v-click>Join / Merge another dataframe</li>
+  <li v-click>Group by</li>
+  <li v-click>Aggregate</li>
+  <li v-click>Sort</li>
+</ul>
 
 </div>
 <div>
