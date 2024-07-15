@@ -12,12 +12,14 @@ highlighter: shiki
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
-
+exportFilename: 'vuejs-nation-2023-lightning-talk-polite-popup'
+download: true
 #   Learn more at [Sli.dev](https://sli.dev)
 transition: slide-left
 title: Cover Page
 hideInToc: true # whether it gets hidden in table of content
 mdc: true
+
 ---
 
 # Technical Sharing
@@ -53,12 +55,19 @@ transition: fade-out
 
 # Table of contents
 
-```html
-<Toc minDepth="1" maxDepth="1"></Toc>
-```
-
 <Toc maxDepth="1"></Toc>
 
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
 
 ---
 transition: fade-out
@@ -67,6 +76,12 @@ transition: fade-out
 # What is Polars?
 
 Polars is a Pandas alternative designed to process data faster. The core is written in Rust, and available for Python, R and NodeJS
+<div
+  v-if="$slidev.nav.currentPage === 3"
+  v-motion
+  :initial="{ x: -100, opacity: 0}"
+  :enter="{ x: 0, opacity: 1, scale: 1, transition: { delay: 100, duration: 1300 } }"
+>
 
 - 💻 Utilizes all the available cores on your machine
 - 🏃 Optimizes queries to reduce unneeded work/memory allocations.
@@ -74,15 +89,13 @@ Polars is a Pandas alternative designed to process data faster. The core is writ
 - 📖 A consistent and predictable API
 - 🔒 Adheres to a strict schema (data-types should be known before running the query).
 
+</div>
 <br>
 <br>
 
 Read more about Polars in [Polars User Guide](https://docs.pola.rs/)
 
-<!--
-You can have `style` tags in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
+
 
 <style>
 h1 {
@@ -97,83 +110,54 @@ h1 {
 </style>
 
 <!--
-Here is another comment.
+styling the header for this page
 -->
+
+
+
 
 ---
 transition: slide-up
 level: 2
 ---
 
-# PyArrow
+# Arrow
+Polars builds on top of the Apache Arrow Project.
+<div grid="~ cols-2 gap-4">
+<div>
 
-Hover on the bottom-left corner to see the navigation's control panel, [learn more](https://sli.dev/guide/navigation.html)
+**Advantages of Arrow:**
 
-## Keyboard Shortcuts
+- Columnar format enables data adjacency for sequential access or scans
 
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
+- Contiguous columnar layout is vectorization-friendly and allows SIMD(Sinlge Instruction, Multiple Data) operations 
+</div>
 
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-  alt=""
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
+<div>
+  <img src="/imgs/cabinet_illustration.png" alt="Cabinet metaphor">
+</div>
+</div>
 
----
-layout: image-right
-image: https://cover.sli.dev
----
 
-# Similarities and Differences with Pandas
-
-Use code snippets and get automatic highlighting, and even types hover![^1]
-
-```ts {all|5|7|7-8|10|all} twoslash
-// TwoSlash enables TypeScript hover information
-// and errors in markdown code blocks
-// More at https://shiki.style/packages/twoslash
-
-import { computed, ref } from 'vue'
-
-const count = ref(0)
-const doubled = computed(() => count.value * 2)
-
-doubled.value = 2
-```
-
-<arrow v-click="[4, 5]" x1="350" y1="310" x2="195" y2="334" color="#953" width="2" arrowSize="1" />
-
-<!-- This allow you to embed external code blocks -->
-<!-- <<< @/snippets/external.ts#snippet -->
-
-<!-- Footer -->
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
-
-<!-- Inline style -->
 <style>
-.footnotes-sep {
-  @apply mt-5 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
 }
 </style>
 
 ---
+transition: fade-in
+---
+
 
 # 7 Verbs that get most jobs done
-
+Most common operations for data manipulation
 <div grid="~ cols-2 gap-4">
 <div>
 
@@ -199,6 +183,18 @@ doubled.value = 2
 </div>
 </div>
 
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
+
 <!--
 Presenter notes with **bold**, *italic*, and ~~strike~~ text.
 
@@ -210,10 +206,71 @@ Also, HTML elements are valid:
 -->
 
 ---
+
+# Similarities and Differences with Pandas
+
+Use code snippets and get automatic highlighting, and even types hover![^1]
+
+<div class="flex justify-between">
+  <div class="flex-grow mr-2">
+
+```js{all|1|6-8|10|1,6-10}
+import Vue from 'vue'
+import Dialog from './Dialog.vue'
+import ClickOutside from '.clickOutside.js'
+import PortalVue from 'portal-vue'
+
+Vue.component('Dialog', Dialog)
+Vue.directive('clickOutside', ClickOutside)
+Vue.use(PortalVue)
+
+new Vue(App).$mount('#app')
+```
+
+  </div>
+  <div class="flex-grow">
+
+```python{all|1|6,11|7-10|7-11}
+output = (
+    df_polars
+    .with_columns(
+        [pl.col('datetimes').dt.year().alias('year'),
+         pl.col('datetimes').dt.month().alias('month')]
+    )
+    .filter(pl.col('year') == 2022)
+    .join(subset_df_polars, on='complex_strings', how='inner')
+    .group_by('categories')
+    .agg(
+        pl.col('integers').sum().alias('sum_integers'),
+        pl.col('floats').mean().alias('mean_floats'),
+    )
+    .filter(pl.col('mean_floats') == pl.col('mean_floats').max())
+    .select(['categories'])
+)
+```
+
+  </div>
+</div>
+
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
+
+
+
+---
 class: px-20
 ---
 
-# Themes
+# When is Polars or Pandas Preferred?
 
 Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switch between themes on a per-slide basis with just **one change** in your frontmatter:
 
