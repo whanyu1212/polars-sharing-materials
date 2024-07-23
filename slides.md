@@ -77,7 +77,7 @@ transition: fade-out
 
 # What is Polars?
 
-Polars is a Pandas alternative designed to process data faster. The core is written in Rust, and available for Python, R and NodeJS
+A Pandas alternative with different design philosopy.
 <div
   v-if="$slidev.nav.currentPage === 3"
   v-motion
@@ -90,6 +90,8 @@ Polars is a Pandas alternative designed to process data faster. The core is writ
 - 📚 Handles datasets much larger than your available RAM
 - 📖 A consistent and predictable API
 - 🔒 Adheres to a strict schema (data-types should be known before running the query).
+- Uses method chaining by default (more elegant?)
+- Dropped the concept of indexing
 
 </div>
 <br>
@@ -111,7 +113,6 @@ h1 {
 
 ---
 transition: slide-up
-level: 2
 ---
 
 # Arrow
@@ -145,12 +146,31 @@ h1 {
 </style>
 
 ---
-transition: slide-left
-level: 2
+transition: slide-up
 ---
 
-# Polars' lazy execution
-This allows for whole-query optimisation in addition to parallelism, and is the preferred (and highest-performance) mode of operation for polars.
+# How to survive without Index?
+The readability of `df.loc[pd.IndexSlice[:, 'B0':'B1'], :]]` can be dubious
+
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
+
+
+---
+transition: slide-left
+---
+
+# Lazy Execution
+The preferred (and highest-performance) mode of operation for polars. You don't necessary need Dask or Spark to scale unless you are running on cluster.
 
 ```python {*}{maxHeight:'250px'}
 def random_dates(start, end, n):
@@ -391,35 +411,21 @@ check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
 
 ---
 
-# LaTeX
+# Additional Performance tips
 
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
+Some fairly obvious performance rules
 
-<br>
+- Use the lazy API.
+- Use Exprs, and don’t use .apply unless you really have to.
+- Use the smallest necessary numeric types (so if you have an integer between 0 and 255, use pl.UInt8, not pl.Int64). This will save both time and space.
+- Use efficient storage (if you’re dumping stuff in files, Parquet is a good choice).
+- Use categoricals for recurring strings (but note that it may not be worth it if there’s not much repetition).
+- Only select the columns you need.
 
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$ {1|3|all}
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
 
 ---
 
-# Diagrams
+# Other Useful Resources
 
 You can create diagrams / graphs from textual descriptions, directly in your Markdown.
 
