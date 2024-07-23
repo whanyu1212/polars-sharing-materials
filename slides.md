@@ -150,8 +150,71 @@ level: 2
 ---
 
 # Polars' lazy execution
-Handling larger than RAM datasets
+This allows for whole-query optimisation in addition to parallelism, and is the preferred (and highest-performance) mode of operation for polars.
 
+```python {*}{maxHeight:'250px'}
+def random_dates(start, end, n):
+    start_u = start.value//10**9
+    end_u = end.value//10**9
+    return pd.to_datetime(np.random.randint(start_u, end_u, n), unit='s')
+
+def generate_dataframe(num_rows):
+    # Generate data
+    int_data = np.random.randint(1, 100, size=num_rows)
+    float_data = np.random.uniform(1.0, 100.0, size=num_rows)
+    string_data = [''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=5)) for _ in range(num_rows)]
+    datetime_data = random_dates(pd.to_datetime('2020-01-01'), pd.to_datetime('2023-01-01'), num_rows)
+    boolean_data = np.random.choice([True, False], size=num_rows)
+    category_data = pd.Categorical(np.random.choice(['A', 'B', 'C', 'D'], size=num_rows))
+    complex_string_data = ['user_' + ''.join(random.choices('0123456789', k=4)) for _ in range(num_rows)]
+    # Another integer column
+    another_int_data = np.random.randint(100, 200, size=num_rows)
+    # Another float column with a different range
+    another_float_data = np.random.uniform(100.0, 200.0, size=num_rows)
+
+    # Create DataFrame using Pandas eager execution
+    df = pd.DataFrame({
+        'integers': int_data,
+        'floats': float_data,
+        'strings': string_data,
+        'datetimes': datetime_data,
+        'booleans': boolean_data,
+        'categories': category_data,
+        'complex_strings': complex_string_data,
+        'more_integers': another_int_data,
+        'more_floats': another_float_data,
+    })
+    
+    return df
+
+# Example usage
+df = generate_dataframe(1_000_000_00)
+
+# The eager execution in Pandas here can cause the kernel to crash if your machine is not powerful enough
+
+
+# Replace the dataframe generation using Polars LazyFrame syntax
+
+    df = pl.LazyFrame({
+          'integers': int_data,
+          'floats': float_data,
+          'strings': string_data,
+          'datetimes': datetime_data,
+          'booleans': boolean_data,
+          'categories': category_data,
+          'complex_strings': complex_string_data,
+          'more_integers': another_int_data,
+          'more_floats': another_float_data,
+      })
+    
+    return df
+
+# Cache it (.collect()) only if you want to materialize the data
+df_polars_lazy = generate_dataframe_polars(1_000_000)
+```
+<br>
+
+Remark: By reducing the <span style="background-color: yellow; color: black;">frequency of materialization</span>, you minimize the number of times data is physically shuffled, sorted, or aggregated across the network or disk, which can be very time-consuming
 
 
 <style>
@@ -189,12 +252,7 @@ Most common operations for data manipulation
 </div>
 <div>
 
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
+![Your Image Description](/imgs/0_ywwiWAyA-uIZTn47.webp)
 </div>
 </div>
 
@@ -273,10 +331,10 @@ h1 {
 
 ---
 layout: image-right
-image: /imgs/1*En6dg0dOK7Nwst9Mdp-VPw.webp
+image: /imgs/pandas_vs_polars.png
 ---
 
-# Benchmarking
+# Benchmarking Set up
 
 Pandas VS Polars with a 1-million rows dataset
 
