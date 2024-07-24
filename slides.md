@@ -90,7 +90,7 @@ A Pandas alternative with different design philosopy.
 - 📚 Handles datasets much larger than your available RAM
 - 📖 A consistent and predictable API
 - 🔒 Adheres to a strict schema (data-types should be known before running the query).
-- Uses method chaining by default (more elegant?)
+- Uses method chaining by default (elegance and readability)
 - Dropped the concept of indexing
 
 </div>
@@ -115,16 +115,24 @@ h1 {
 transition: slide-up
 ---
 
-# Arrow
+# Arrow Columnar Format
 Polars builds on top of the Apache Arrow Project.
 <div grid="~ cols-2 gap-4">
 <div>
 
 **Advantages of Arrow:**
 
-- Columnar format enables data adjacency for sequential access or scans
+- Data adjacency for sequential access (scans)
+- O(1) (constant-time) random access
+- SIMD and vectorization-friendly
+- Relocatable without “pointer swizzling”, allowing for true zero-copy access in shared memory
 
-- Contiguous columnar layout is vectorization-friendly and allows SIMD(Sinlge Instruction, Multiple Data) operations 
+
+**Remark:**
+
+Pandas 2.0 has integration with Arrow but it is <u>more for storage</u>, computational potential is yet exploited across all Pandas operations.
+[Reference](https://datapythonista.me/blog/pandas-20-and-the-arrow-revolution-part-i)
+
 </div>
 
 <div>
@@ -150,7 +158,36 @@ transition: slide-up
 ---
 
 # How to survive without Index?
-The readability of `df.loc[pd.IndexSlice[:, 'B0':'B1'], :]]` can be dubious
+Polars does not have the equivalent of `.loc` or `.iloc` in Pandas
+
+- The readability of `df.loc[pd.IndexSlice[:, 'B0':'B1'], :]]` can be dubious
+- `reset_index(drop=True)` can be troublesome
+- You can still use `[]` to get rows and columns but the recommended way is to use `.select` or `.filter`
+
+<br>
+
+Code snippet:
+```python{*}{maxHeight:'250px'}
+# Rows by number and columns by name
+
+# The recommended ways
+df_pl.select(["integers", "categories"]).head(16).tail(4)
+
+df_pl.select(pl.col(["integers", "categories"]).gather(list(range(12, 16))))
+
+# You can still do this but it is not recommended (Type error in lazy execution)
+df_pl[12:16, ["integers", "categories"]]
+
+
+# Rows by string index, columns by name
+(
+    df_pl.filter(pl.col("strings").str.contains("NJ"))
+    .select(['integers', 'floats', 'strings'])
+)
+
+# Both rows and columns by number
+df_pl[[0, 1, 3], [0, 1]]
+```
 
 <style>
 h1 {
@@ -169,8 +206,8 @@ h1 {
 transition: slide-left
 ---
 
-# Lazy Execution
-The preferred (and highest-performance) mode of operation for polars. You don't necessary need Dask or Spark to scale unless you are running on cluster.
+# Lazy Execution (1)
+Only materialize the dataset in memory when necessary, based on the operations that have been queued
 
 ```python {*}{maxHeight:'250px'}
 def random_dates(start, end, n):
@@ -235,6 +272,43 @@ df_polars_lazy = generate_dataframe_polars(1_000_000)
 <br>
 
 Remark: By reducing the <span style="background-color: yellow; color: black;">frequency of materialization</span>, you minimize the number of times data is physically shuffled, sorted, or aggregated across the network or disk, which can be very time-consuming
+
+
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
+
+---
+transition: fade-out
+---
+
+# Lazy Execution (2)
+Streaming mode, usually compared to Dask instead of Pandas. Still under construction
+
+Use Case: If data is continuously generated and needs immediate processing
+
+Sample code:
+```python
+pl.enable_string_cache()
+occupation_counts_pl = (
+    pl.scan_parquet(fec_dir / "indiv*.pq", cache=False)
+    .select(pl.col("OCCUPATION").value_counts(parallel=True, sort=True))
+    .collect(streaming=True)
+)
+occupation_counts_pl
+```
+<br>
+
+[Reference](https://kevinheavey.github.io/modern-polars/scaling.html)
+
 
 
 <style>
@@ -354,16 +428,10 @@ layout: image-right
 image: /imgs/pandas_vs_polars.png
 ---
 
-# Benchmarking Set up
+# Interoprability with other Python Libraries
 
-Pandas VS Polars with a 1-million rows dataset
-
-- Read & Write
-- Sorting
-- Groupby & Aggregation
-- String Manipulation
-- Filtering Rows
-- Join Operations
+- Numpy
+- ML
 
 <style>
 h1 {
