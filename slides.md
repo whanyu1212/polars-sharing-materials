@@ -85,13 +85,11 @@ A Pandas alternative with different design philosopy.
   :enter="{ x: 0, opacity: 1, scale: 1, transition: { delay: 100, duration: 1300 } }"
 >
 
-- 💻 Utilizes all the available cores on your machine
-- 🏃 Optimizes queries to reduce unneeded work/memory allocations.
-- 📚 Handles datasets much larger than your available RAM
-- 📖 A consistent and predictable API
-- 🔒 Adheres to a strict schema (data-types should be known before running the query).
-- Uses method chaining by default (elegance and readability)
-- Dropped the concept of indexing
+- ⏩ Highly performant, built-in multithrading and vectorized query engine
+- 💯 Highly scalable, capable of handling datasets larger than available RAM
+- 🔒 A consistent and predictable API
+- ⛓️ Uses method chaining by default (elegance and readability)
+- #️⃣ Dropped the concept of indexing
 
 </div>
 <br>
@@ -161,8 +159,8 @@ transition: slide-up
 Polars does not have the equivalent of `.loc` or `.iloc` in Pandas
 
 - The readability of `df.loc[pd.IndexSlice[:, 'B0':'B1'], :]]` can be dubious
-- `reset_index(drop=True)` can be troublesome
-- You can still use `[]` to get rows and columns but the recommended way is to use `.select` or `.filter`
+- `reset_index(drop=True)` is not very appealing
+- You can still use `[]` to get rows and columns but not recommended
 
 <br>
 
@@ -271,7 +269,7 @@ df_polars_lazy = generate_dataframe_polars(1_000_000)
 ```
 <br>
 
-Remark: By reducing the <span style="background-color: yellow; color: black;">frequency of materialization</span>, you minimize the number of times data is physically shuffled, sorted, or aggregated across the network or disk, which can be very time-consuming
+Remark: By reducing the <u>frequency of materialization</u>, you minimize the number of times data is physically shuffled, sorted, or aggregated across the network or disk, which can be very time-consuming
 
 
 <style>
@@ -370,13 +368,14 @@ The following code snippets show the minor differences in syntax for the same op
 
 <div grid="~ cols-2 gap-4">
   <div>
-
-```python{all|2-5|6|7|8-12|13|14|all}
+Pandas🐼
+```python{all|2-5|6|7|8|9-13|14|15|all}
 output = (
     df.assign(
         year= lambda x: x['datetimes'].dt.year,
         month= lambda x: x['datetimes'].dt.month
     )
+    .sort_values('year')
     .query("year==2022") # .loc
     .merge(subset_df, on='complex_strings', how='inner')
     .groupby('categories', as_index=False)
@@ -391,12 +390,14 @@ output = (
 </div>
 
 <div>
-```python{all|2-5|6|7|8-12|13|14|all}
+Polars🐻‍❄️
+```python{all|2-5|6|7|8|9-13|14|15|all}
 output = (
     df_polars.with_columns(
         [pl.col('datetimes').dt.year().alias('year'),
          pl.col('datetimes').dt.month().alias('month')]
     )
+    .sort('year')
     .filter(pl.col('year') == 2022)
     .join(subset_df_polars, on='complex_strings', how='inner')
     .group_by('categories')
@@ -424,14 +425,72 @@ h1 {
 </style>
 
 ---
-layout: image-right
-image: /imgs/pandas_vs_polars.png
+transition: fade-out
 ---
 
 # Interoprability with other Python Libraries
 
-- Numpy
-- ML
+
+<div grid="~ cols-2 gap-2" m="t-2">
+<div>
+
+**Numpy**
+```python
+df = pl.DataFrame({"a": [1, 2, 3]})
+arr = df.to_numpy() # array([[1],[2],[3]])
+```
+<br>
+
+**Scikit Learn update 1.4**
+
+![Scikit Learn update 1.4](/imgs/polars_scikit_learn.png)
+
+</div>
+
+<div>
+
+**Visualization**
+```python
+# Calling from dataframe directly
+df.plot.bar(x="species", y="petal_length", width=650)
+
+# plotly
+import plotly.express as px
+
+px.bar(df, x="species", y="petal_length", width=400)
+```
+
+**BigQuery**
+```python{*}{maxHeight:'150px'}
+import polars as pl
+from google.cloud import bigquery
+
+# Read
+
+client = bigquery.Client()
+query_job = client.query(QUERY)  # API request
+rows = query_job.result()  # Waits for query to finish
+
+df = pl.from_arrow(rows.to_arrow())
+
+# Write
+with io.BytesIO() as stream:
+    df.write_parquet(stream)
+    stream.seek(0)
+    job = client.load_table_from_file(
+        stream,
+        destination='tablename',
+        project='projectname',
+        job_config=bigquery.LoadJobConfig(
+            source_format=bigquery.SourceFormat.PARQUET,
+        ),
+    )
+job.result()
+```
+
+</div>
+
+</div>
 
 <style>
 h1 {
@@ -494,81 +553,33 @@ Some fairly obvious performance rules
 ---
 
 # Other Useful Resources
+To help you get started
 
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
+**<u>Github Repository:</u>**     
 
-<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
+- [Awesome Polars](https://github.com/ddotta/awesome-polars).
 
-```mermaid {scale: 0.5, alt: 'A simple sequence diagram'}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
-```
+**<u>Videos:</u>**
+- [EuroSciPy 2023](https://www.youtube.com/watch?v=GTVm3QyJ-3I&t=48s)
+- [PyConDE 2023](https://github.com/datenzauberai/PyConDE-2023--Polars-make-the-switch)
+- Or any other talks given by the author of the library: <mark>Ritchie Vink</mark>
 
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
+**<u>Books:</u>**
+- Python Polars: The Definitive Guide
+- Polars Cookbook 
+- Effective Polars
 
-```mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectivness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
 }
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
-
-</div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
+</style>
 ---
 layout: center
 class: text-center
