@@ -75,7 +75,7 @@ h1 {
 transition: fade-out
 ---
 
-# What is Polars?
+# What is Polars
 
 A Pandas alternative with different design philosopy.
 <div
@@ -110,13 +110,20 @@ h1 {
 
 
 ---
-transition: slide-up
+transition: fade-out
 ---
 
 # Arrow Columnar Format
 Polars builds on top of the Apache Arrow Project.
 <div grid="~ cols-2 gap-4">
 <div>
+
+<div
+  v-if="$slidev.nav.currentPage === 4"
+  v-motion
+  :initial="{ x: -100, opacity: 0}"
+  :enter="{ x: 0, opacity: 1, scale: 1, transition: { delay: 100, duration: 1300 } }"
+>
 
 **Advantages of Arrow:**
 
@@ -125,11 +132,12 @@ Polars builds on top of the Apache Arrow Project.
 - SIMD and vectorization-friendly
 - Relocatable without “pointer swizzling”, allowing for true zero-copy access in shared memory
 
-
 **Remark:**
 
 Pandas 2.0 has integration with Arrow but it is <u>more for storage</u>, computational potential is yet exploited across all Pandas operations.
 [Reference](https://datapythonista.me/blog/pandas-20-and-the-arrow-revolution-part-i)
+
+</div>
 
 </div>
 
@@ -155,12 +163,12 @@ h1 {
 transition: slide-up
 ---
 
-# How to survive without Index?
+# How to survive without Index
 Polars does not have the equivalent of `.loc` or `.iloc` in Pandas
 
 - The readability of `df.loc[pd.IndexSlice[:, 'B0':'B1'], :]]` can be dubious
 - `reset_index(drop=True)` is not very appealing
-- You can still use `[]` to get rows and columns but not recommended
+- You can still use `[]` to get rows and columns but not recommended (Performance)
 
 <br>
 
@@ -362,6 +370,8 @@ h1 {
 
 ---
 
+---
+
 # Similarities and Differences with Pandas
 
 The following code snippets show the minor differences in syntax for the same operations
@@ -504,56 +514,67 @@ h1 {
 }
 </style>
 
+
 ---
-class: px-20
+transition: fade-out
 ---
 
 # When is Polars or Pandas Preferred?
+Neither Polars nor Pandas emerges as the clear favourite universally
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switch between themes on a per-slide basis with just **one change** in your frontmatter:
+<div grid="~ cols-2 gap-4">
+<div>
 
-<div grid="~ cols-2 gap-2" m="t-2">
+**<u>Polars is advantageous when:</u>**
 
-```yaml
----
-theme: default
----
-```
+- The data size and complexity is big enough to feel the performance gain (a.k.a performance-centric applications)
 
-```yaml
----
-theme: seriph
----
-```
+<br>
 
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true" alt="">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true" alt="">
+- Assuming large datasets, the operations are primarily numeric
 
 </div>
 
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
+<div>
+
+**<u>Pandas remained preferred for:</u>**
+
+- Where ecosystem integration is crucial
+
+<br>
+
+- Complex visualization or integration with web app framework
+<br>
+
+- When styling matters
+
+
+</div>
+
+</div>
+
+
+<style>
+h1 {
+  background-color: #2B90B6;
+  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
 
 
 ---
-
-# Additional Performance tips
-
-Some fairly obvious performance rules
-
-- Use the lazy API.
-- Use Exprs, and don’t use .apply unless you really have to.
-- Use the smallest necessary numeric types (so if you have an integer between 0 and 255, use pl.UInt8, not pl.Int64). This will save both time and space.
-- Use efficient storage (if you’re dumping stuff in files, Parquet is a good choice).
-- Use categoricals for recurring strings (but note that it may not be worth it if there’s not much repetition).
-- Only select the columns you need.
-
 
 ---
 
 # Other Useful Resources
 To help you get started
+
+<div style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #ccc;">
 
 **<u>Github Repository:</u>**     
 
@@ -569,6 +590,12 @@ To help you get started
 - Polars Cookbook 
 - Effective Polars
 
+**<u>Update Logs:</u>** 
+
+https://pola.rs/posts/
+
+</div>
+
 <style>
 h1 {
   background-color: #2B90B6;
@@ -580,11 +607,13 @@ h1 {
   -moz-text-fill-color: transparent;
 }
 </style>
+
 ---
 layout: center
 class: text-center
+hideInToc: true
 ---
 
-# Learn More
+# Thank you!
 
-[Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
+[Link to the slides](https://github.com/whanyu1212/polars-sharing-materials)
